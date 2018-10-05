@@ -11,7 +11,7 @@
 uint8_t i2c_rotary_type = 0;
 uint8_t i2c_rotary_read_counter = 0;
 
-void I2cRotary_Detect() {
+void I2cRotary_Detect(void) {
   if (i2c_rotary_type) { return; }
 
   uint8_t buffer = I2cRead8(I2C_ROTARY_ADDRESS,I2C_ROTARY_SIGNATURE);
