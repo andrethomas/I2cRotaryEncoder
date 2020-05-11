@@ -1,3 +1,19 @@
+ITEMS_File:
+Number KuecheDreh 	"KuecheDrehencoder [%s]"	(gruppeKueche)	{mqtt="<[MQTT:stat/KuecheSchalter/RESULT:state:JSONPATH($.I2cRotary_Value)]"}
+Number KuecheDrehOld    "KuecheDrehencoder Alt [%s]"
+Number KuecheDrehstate  "KuecheDrehencoder [%s]"			{mqtt="<[MQTT:stat/KuecheSchalter/RESULT:state:JSONPATH($.I2cRotary_Value)]"}
+Dimmer KuecheDrehDimmer "Kueche Dimmer 01 [%s]"				{mqtt=">[mqtt:cmnd/KuecheSchalter/DIMMER:command:*:default],<[mqtt:stat/KuecheSchalter/RESULT:state:JSONPATH($.Dimmer)],<[MQTT:tele/KuecheSchalter/STATE:state:JSONPATH($.Dimmer)]"}
+
+
+SITEMAP_File:
+
+		Text 	item=KuecheDreh
+		Text 	item=KuecheDrehOld
+		Slider  item=KuecheDrehDimmer
+
+
+RULE_File:
+
 rule "Drehencoder Auswerten"
 	when
 		Item KuecheDreh changed
