@@ -1,3 +1,6 @@
+#define XSNS_92             92
+
+
 #ifdef USE_I2C
 #ifdef USE_I2C_ROTARY
 
@@ -6,10 +9,11 @@
 #define I2C_ROTARY_SIGNATURE          0x67
 #define I2C_ROTARY_VALUE              0x65
 
-#define I2C_ROTARY_READ_INTERVAL         5 // Read the rotary encoder every this many seconds and report via MQT the current value
+#define I2C_ROTARY_READ_INTERVAL         1 // Read the rotary encoder every this many 100milliseconds and report via MQT the current value IF the Value changed
 
 uint8_t i2c_rotary_type = 0;
 uint8_t i2c_rotary_read_counter = 0;
+uint8_t oldvalue = 0;
 
 void I2cRotary_Detect(void) {
   if (i2c_rotary_type) { return; }
@@ -37,26 +41,29 @@ void I2cRotary_Telemetry(void)
 }
 
 void I2cRotary_Report_Value(void) {
-  uint8_t newvalue = I2cRotary_Read();
-  snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("{\"" D_JSON_TIME "\":\"%s\""), GetDateAndTime(DT_LOCAL).c_str());
-  snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,\"I2cRotary_Value\":%i}"), mqtt_data, newvalue);
-  snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s}"), mqtt_data);
-  MqttPublishPrefixTopic_P(RESULT_OR_STAT, mqtt_data);
+uint8_t newvalue = I2cRotary_Read();
+  if (oldvalue != newvalue){
+    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("{\"" D_JSON_TIME "\":\"%s\""), GetDateAndTime(DT_LOCAL).c_str());
+    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,\"I2cRotary_Value\":%i}"), mqtt_data, newvalue);
+    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s}"), mqtt_data);
+    MqttPublishPrefixTopic_P(RESULT_OR_STAT, mqtt_data);
+    oldvalue = newvalue;
+  }
 }
 
 /*********************************************************************************************\
  * Interface
 \*********************************************************************************************/
 
-#define XSNS_91
+//#define XSNS_92
 
-boolean Xsns91(byte function)
+boolean Xsns92(byte function)
 {
   boolean result = false;
 
   if (i2c_flg) {
     switch (function) {
-      case FUNC_EVERY_SECOND:
+      case FUNC_EVERY_100_MSECOND:
         I2cRotary_Detect();
         if (i2c_rotary_type) { // We have a valid rotary encoder on I2C
           i2c_rotary_read_counter++; // Increase the counter
