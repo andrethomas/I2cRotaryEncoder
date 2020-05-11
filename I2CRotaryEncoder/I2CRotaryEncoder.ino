@@ -42,7 +42,7 @@ static int8_t c,val;
       if ( prevNextCode==0x0b) {
         encoder_value --;
         if (DEBUG >= 1){
-         Serial.print("eleven ");
+         Serial.print("left turn ");
          Serial.println(store,HEX);
         }
       }
@@ -50,7 +50,7 @@ static int8_t c,val;
       if ( prevNextCode==0x07) {
         encoder_value ++;
         if (DEBUG >= 1){
-         Serial.print("seven ");
+         Serial.print("right turn ");
          
          Serial.println(store,HEX);
         }
