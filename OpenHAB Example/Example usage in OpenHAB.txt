@@ -20,24 +20,27 @@ rule "Drehencoder Auswerten"
 	then
 		var Number alterWert = KuecheDrehOld.state as Number
 		var Number neuerWert = KuecheDreh.state as Number
-		if (neuerWert > 250 && alterWert < 5){ alterWert = alterWert + 256};
-		if (neuerWert < 5 && alterWert > 250){ alterWert = alterWert - 256};
-		var Number AktuellerDimmwert = KuecheDrehDimmer.state as Number
-		var Dimmwert = 5
+		if (neuerWert > 250 && alterWert < 5){ alterWert = alterWert + 256};	//Compensate Underrun
+		if (neuerWert < 5 && alterWert > 250){ alterWert = alterWert - 256};	//Compensate Overrun
+/*		if ((neuerWert == 0 && (alterWert - neuerWert ) > 6) || ){  //Compensate a rebooted device
+				KuecheDrehOld.postUpdate(neuerWert);			//write Current Position to "Memory"
+				return;											//and exit rule.
+			};
+*/		var Number AktuellerDimmwert = KuecheDrehDimmer.state as Number	
+		var Dimmwert = 5    	//How many "steps" you want to dimm 
 			var j = neuerWert - alterWert;
 			var i = 0;
-			while ((i=i+1) < j){
+			while ((i=i+1) < j){		//If your Encoder reported more than one step at once.
 			Dimmwert = Dimmwert + Dimmwert;
 			}
 //		val Number Anzahl = 0 
-		if (neuerWert < alterWert ){
+		if (neuerWert < alterWert ){		//if turned left
 			KuecheDrehDimmer.sendCommand(KuecheDrehDimmer.state as DecimalType - Dimmwert);//		KuecheDrehOld = neuerWert;
-		if (AktuellerDimmwert <= Dimmwert ){  KuecheDrehDimmer.sendCommand(0) ;}
+		if (AktuellerDimmwert <= Dimmwert ){  KuecheDrehDimmer.sendCommand(0) ;} //if the old Value of Dimmer is below your Steps, it won't be recognized  
 		};
-		if (neuerWert > alterWert ){
+		if (neuerWert > alterWert ){		//if turned right
 			KuecheDrehDimmer.sendCommand(KuecheDrehDimmer.state as DecimalType + Dimmwert);//		KuecheDrehOld = neuerWert;
-		if ((Dimmwert+AktuellerDimmwert) >= 100){  KuecheDrehDimmer.sendCommand(100) ;}
+		if ((Dimmwert+AktuellerDimmwert) >= 100){  KuecheDrehDimmer.sendCommand(100) ;} //if the old Value of Dimmer is above your Steps, it won't be recognized
 		};
-		KuecheDrehOld.postUpdate(neuerWert);
-
+		KuecheDrehOld.postUpdate(neuerWert);		//Save the new value for the next old value
 end
