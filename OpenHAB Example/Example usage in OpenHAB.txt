@@ -1,0 +1,27 @@
+rule "Drehencoder Auswerten"
+	when
+		Item KuecheDreh changed
+	then
+		var Number alterWert = KuecheDrehOld.state as Number
+		var Number neuerWert = KuecheDreh.state as Number
+		if (neuerWert > 250 && alterWert < 5){ alterWert = alterWert + 256};
+		if (neuerWert < 5 && alterWert > 250){ alterWert = alterWert - 256};
+		var Number AktuellerDimmwert = KuecheDrehDimmer.state as Number
+		var Dimmwert = 5
+			var j = neuerWert - alterWert;
+			var i = 0;
+			while ((i=i+1) < j){
+			Dimmwert = Dimmwert + Dimmwert;
+			}
+//		val Number Anzahl = 0 
+		if (neuerWert < alterWert ){
+			KuecheDrehDimmer.sendCommand(KuecheDrehDimmer.state as DecimalType - Dimmwert);//		KuecheDrehOld = neuerWert;
+		if (AktuellerDimmwert <= Dimmwert ){  KuecheDrehDimmer.sendCommand(0) ;}
+		};
+		if (neuerWert > alterWert ){
+			KuecheDrehDimmer.sendCommand(KuecheDrehDimmer.state as DecimalType + Dimmwert);//		KuecheDrehOld = neuerWert;
+		if ((Dimmwert+AktuellerDimmwert) >= 100){  KuecheDrehDimmer.sendCommand(100) ;}
+		};
+		KuecheDrehOld.postUpdate(neuerWert);
+
+end
