@@ -8,6 +8,11 @@ Once you can do this you can add the file:
 https://github.com/andrethomas/I2cRotaryEncoder/blob/master/Sonoff-Tasmota%20Driver/xsns_91_I2cRotary.ino
 to the /sonoff/ source code folder which will allow it to be included during compilation.
 
+activate the Driver within your User_Config_Override.h with (it won't work if your "Use_I2C" is deactivated, too. For making a minimal Firmware for OTA):
+
+#define USE_I2C_ROTARY
+
+
 The rotary encoder needs only the Arduino sketch:
 https://github.com/andrethomas/I2cRotaryEncoder/blob/master/I2CRotaryEncoder/I2CRotaryEncoder.ino
 

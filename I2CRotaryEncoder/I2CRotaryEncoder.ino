@@ -1,3 +1,6 @@
+#define CLK 2
+#define DATA 3
+
 #include <Wire.h>
 
 #define I2C_ADDRESS           0x77
@@ -6,53 +9,70 @@
 #define I2C_ROTARY_SIGNATURE    0x67
 #define I2C_ROTARY_VALUE        0x65
 
-const byte encoderPinA = 2;
-const byte encoderPinB = 3;
-
-volatile int count = 0;
+#define DEBUG 1         //level 1 für Seriellen Monitor, 0 für aus
 
 uint8_t encoder_value = 0;
-uint8_t encoder_value_prev = 0;
-
-#define readA bitRead(PIND,2) // Faster to read this way than digitalRead();
-#define readB bitRead(PIND,3) // Faster to read this way than digitalRead();
 
 void setup() {
-  pinMode(encoderPinA, INPUT_PULLUP);
-  pinMode(encoderPinB, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(encoderPinA), isrA, FALLING);
-  attachInterrupt(digitalPinToInterrupt(encoderPinB), isrB, FALLING);
+  pinMode(CLK, INPUT);
+  pinMode(CLK, INPUT_PULLUP);
+  pinMode(DATA, INPUT);
+  pinMode(DATA, INPUT_PULLUP);
   Wire.begin(I2C_ADDRESS);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
-  
-} 
-
-void loop()  {
-  noInterrupts();
-  encoder_value = count;
-  interrupts();
-  encoder_value_prev = encoder_value;
+      if (DEBUG >= 1){
+        Serial.begin (115200);
+        Serial.println("I2C Rotaryencoder for Tasmota");
+      }
 }
 
-void isrA() {
-  if(readB != readA) {
-    count ++;
-  } else {
-    count --;
-  }
-  if (count < 0) count=0;
-  if (count > 100) count=100;
+static uint8_t prevNextCode = 0;
+static uint16_t store=0;
+
+void loop() {
+static int8_t c,val;
+
+   if( val=read_rotary() ) {
+      c +=val;
+      if (DEBUG >= 1){
+        Serial.print(c);Serial.print(" ");
+        Serial.print(encoder_value);Serial.print(" ");
+      }
+      if ( prevNextCode==0x0b) {
+        encoder_value --;
+        if (DEBUG >= 1){
+         Serial.print("left turn ");
+         Serial.println(store,HEX);
+        }
+      }
+
+      if ( prevNextCode==0x07) {
+        encoder_value ++;
+        if (DEBUG >= 1){
+         Serial.print("right turn ");
+         
+         Serial.println(store,HEX);
+        }
+      }
+   }
 }
 
-void isrB() {
-  if (readA == readB) {
-    count ++;
-  } else {
-    count --;
-  }
-  if (count < 0) count=0;
-  if (count > 100) count=100;
+int8_t read_rotary() {
+  static int8_t rot_enc_table[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0};
+
+  prevNextCode <<= 2;
+  if (digitalRead(DATA)) prevNextCode |= 0x02;
+  if (digitalRead(CLK)) prevNextCode |= 0x01;
+  prevNextCode &= 0x0f;
+
+   if  (rot_enc_table[prevNextCode] ) {
+      store <<= 4;
+      store |= prevNextCode;
+      if ((store&0xff)==0x2b) return -1;
+      if ((store&0xff)==0x17) return 1;
+   }
+   return 0;
 }
 
 void receiveEvent(int bytesReceived) {
@@ -77,4 +97,3 @@ void requestEvent() {
         break;
     }
 }
-
