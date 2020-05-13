@@ -54,7 +54,7 @@ void I2cRotary_Telemetry(void)
 {
   if (i2c_rotary_type) {
     uint8_t value = I2cRotary_Read();
-    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,\"I2cRotary\":%i"), mqtt_data, value);
+    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,\"I2cRotary\":{\"Rotary1\":%i}"), mqtt_data, value);
   }
 }
 
@@ -63,7 +63,7 @@ void I2cRotary_Report_Value(void)
   uint8_t newvalue = I2cRotary_Read();
   if (i2c_rotary_oldvalue != newvalue) {
     snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("{\"" D_JSON_TIME "\":\"%s\""), GetDateAndTime(DT_LOCAL).c_str());
-    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,{\"I2cRotary_Value\":%i}"), mqtt_data, newvalue);
+    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,\"I2cRotary\":{\"Rotary1\":%i}"), mqtt_data, newvalue);
     snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s}"), mqtt_data);
     MqttPublishPrefixTopic_P(RESULT_OR_STAT, mqtt_data);
     i2c_rotary_oldvalue = newvalue;
