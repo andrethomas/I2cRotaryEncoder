@@ -25,6 +25,7 @@
 #define I2C_ROTARY_ADDRESS            0x77
 
 #define I2C_ROTARY_SIGNATURE          0x67
+#define I2C_ROTARY_SETROTARY          0x66
 #define I2C_ROTARY_VALUE              0x65
 
 #define I2C_ROTARY_READ_INTERVAL         1 // Read the rotary encoder every this many 100milliseconds and report via MQT the current value IF the Value changed
@@ -71,6 +72,29 @@ void I2cRotary_Report_Value(void)
 }
 
 /*********************************************************************************************\
+ * Commands Interface
+\*********************************************************************************************/
+
+#define D_PRFX_I2C_ROTARY         "Rotary"
+#define D_CMND_I2C_ROTARY_SET     "Set"
+
+const char kI2cRotaryCommands[] PROGMEM = D_PRFX_I2C_ROTARY "|"
+  D_CMND_I2C_ROTARY_SET;
+
+void (* const I2cRotaryCommand[])(void) PROGMEM = {
+  &CmndI2cRotarySet };
+
+void CmndI2cRotarySet(void)
+{
+  uint8_t setvalue = 0;
+  if (0 < XdrvMailbox.data_len) {
+    setvalue = atoi(XdrvMailbox.data);
+  }
+  I2cWrite8(I2C_ROTARY_ADDRESS, I2C_ROTARY_SETROTARY, setvalue);
+  ResponseCmndDone();
+}
+
+/*********************************************************************************************\
  * Interface
 \*********************************************************************************************/
 
@@ -92,6 +116,9 @@ boolean Xsns92(byte function)
         break;
       case FUNC_JSON_APPEND:
         I2cRotary_Telemetry();
+        break;
+      case FUNC_COMMAND:
+        result = DecodeCommand(kI2cRotaryCommands, I2cRotaryCommand);
         break;
       default:
         break;
