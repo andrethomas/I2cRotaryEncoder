@@ -1,8 +1,7 @@
-#define XSNS_92             92
-
-
 #ifdef USE_I2C
 #ifdef USE_I2C_ROTARY
+
+#define XSNS_92                         92
 
 #define I2C_ROTARY_ADDRESS            0x77
 
