@@ -5,7 +5,7 @@ This code is experimental and a work in progress - please do not ask for it to b
 You are welcome to test, but in order to do this you need to be able to compile Tasmota.
 
 Once you can do this you can add the file:
-https://github.com/andrethomas/I2cRotaryEncoder/blob/master/Tasmota%20Driver/xsns_91_I2cRotary.ino
+https://github.com/andrethomas/I2cRotaryEncoder/blob/master/Tasmota%20Driver/xsns_92_I2cRotary.ino
 to the /tasmota/ source code folder which will allow it to be included during compilation.
 
 activate the Driver within your User_Config_Override.h with (it won't work if your "Use_I2C" is deactivated, too. For making a minimal Firmware for OTA):
