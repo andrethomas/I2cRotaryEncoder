@@ -20,6 +20,10 @@
 
 #include <Wire.h>
 
+#define LIMIT_ENABLE            // Keep value between LIMIT_MIN and LIMIT_MAX
+#define LIMIT_MIN 0
+#define LIMIT_MAX 100
+
 #define CLK  2
 #define DATA 3
 
@@ -62,14 +66,26 @@ void loop(void)
       Serial.print(" ");
     }
     if (prevNextCode == 0x0b) {
-      encoder_value --;
+#ifdef LIMIT_ENABLE
+      if (encoder_value > (uint8_t)LIMIT_MIN) {
+        encoder_value--;
+      }
+#else      
+      encoder_value--;
+#endif // LIMIT_ENABLE
       if (DEBUG >= 1) {
         Serial.print("left turn ");
         Serial.println(store,HEX);
       }
     }
     if (prevNextCode == 0x07) {
-      encoder_value ++;
+#ifdef LIMIT_ENABLE
+      if (encoder_value < (uint8_t)LIMIT_MAX) {
+        encoder_value++;
+      }
+#else      
+      encoder_value++;
+#endif // LIMIT_ENABLE
       if (DEBUG >= 1) {
         Serial.print("right turn ");
         Serial.println(store,HEX);
@@ -106,7 +122,6 @@ int8_t read_rotary(void)
 
 void receiveEvent(int bytesReceived)
 {
-  
 }
 
 void SendValue(void)
