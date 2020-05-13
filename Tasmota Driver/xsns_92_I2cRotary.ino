@@ -54,7 +54,7 @@ void I2cRotary_Telemetry(void)
 {
   if (i2c_rotary_type) {
     uint8_t value = I2cRotary_Read();
-    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,{\"I2cRotary\":%i}"), mqtt_data, value);
+    snprintf_P(mqtt_data, sizeof(mqtt_data), PSTR("%s,\"I2cRotary\":%i"), mqtt_data, value);
   }
 }
 
@@ -101,4 +101,4 @@ boolean Xsns92(byte function)
 }
 
 #endif  // USE_I2C_ROTARY
-#endif  // USE_I2C
+#endif // USE_I2C
