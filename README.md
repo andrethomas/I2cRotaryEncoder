@@ -1,17 +1,16 @@
 **Tasmota-I2cRotaryEncoder**
 
-This code is experimental and a work in progress - please do not ask for it to be included in Sonoff-Tasmota at this time.
+This code is experimental and a work in progress - please do not ask for it to be included in Tasmota at this time.
 
-You are welcome to test, but in order to do this you need to be able to compile Sonoff-Tasmota.
+You are welcome to test, but in order to do this you need to be able to compile Tasmota.
 
 Once you can do this you can add the file:
-https://github.com/andrethomas/I2cRotaryEncoder/blob/master/Sonoff-Tasmota%20Driver/xsns_91_I2cRotary.ino
-to the /sonoff/ source code folder which will allow it to be included during compilation.
+https://github.com/andrethomas/I2cRotaryEncoder/blob/master/Tasmota%20Driver/xsns_92_I2cRotary.ino
+to the /tasmota/ source code folder which will allow it to be included during compilation.
 
 activate the Driver within your User_Config_Override.h with (it won't work if your "Use_I2C" is deactivated, too. For making a minimal Firmware for OTA):
 
 #define USE_I2C_ROTARY
-
 
 The rotary encoder needs only the Arduino sketch:
 https://github.com/andrethomas/I2cRotaryEncoder/blob/master/I2CRotaryEncoder/I2CRotaryEncoder.ino
@@ -20,7 +19,7 @@ This needs to be flashed to an Arduino UNO, Arduino Pro-Mini, or compatible and 
 
 **TO-DO LIST**
 
-- Complete register integration to enable updating of current value from Sonoff-Tasmota via I2C
+- Complete register integration to enable updating of current value from Tasmota via I2C
 - Implement PWM support on at least one PWM capable output pin
 - Implement zero cross detection so that PWM can also be used for AC dimming.
 
