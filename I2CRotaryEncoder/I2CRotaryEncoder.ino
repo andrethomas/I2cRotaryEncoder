@@ -31,6 +31,7 @@
 #define I2C_ID                  0xFE
 
 #define I2C_ROTARY_SIGNATURE    0x67
+#define I2C_ROTARY_SETROTARY    0x66
 #define I2C_ROTARY_VALUE        0x65
 
 #define DEBUG                   1     // Level 1 for serial monitor debug output OR 0 for no debugging on serial monitor
@@ -134,6 +135,20 @@ void SendSignature(void)
   Wire.write(I2C_ID);
 }
 
+void SetValue(void)
+{
+  uint8_t tmp = Wire.read();
+#ifdef LIMIT_ENABLE
+  if (tmp < (uint8_t)LIMIT_MIN) {
+    tmp = (uint8_t)LIMIT_MIN;
+  }
+  if (tmp > (uint8_t)LIMIT_MAX) {
+    tmp = (uint8_t)LIMIT_MAX;
+  }
+#endif  
+  encoder_value = tmp;
+}
+
 void requestEvent(void)
 {
   uint8_t reg = Wire.read();
@@ -143,6 +158,11 @@ void requestEvent(void)
          break;
     case I2C_ROTARY_VALUE:
          SendValue();
+         break;
+    case I2C_ROTARY_SETROTARY:
+         SetValue();
+         break;
+    default:
          break;
   }
 }

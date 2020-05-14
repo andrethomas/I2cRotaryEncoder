@@ -19,7 +19,6 @@ This needs to be flashed to an Arduino UNO, Arduino Pro-Mini, or compatible and 
 
 **TO-DO LIST**
 
-- Complete register integration to enable updating of current value from Tasmota via I2C
 - Implement PWM support on at least one PWM capable output pin
 - Implement zero cross detection so that PWM can also be used for AC dimming.
 
