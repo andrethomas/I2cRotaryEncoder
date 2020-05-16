@@ -15,7 +15,6 @@
   
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  
 */
 
 #include <Wire.h>
@@ -34,7 +33,7 @@
 #define I2C_ROTARY_SETROTARY    0x66
 #define I2C_ROTARY_VALUE        0x65
 
-#define DEBUG                   1     // Level 1 for serial monitor debug output OR 0 for no debugging on serial monitor
+#define DEBUG                         // Serial monitor debug output
 
 uint8_t encoder_value = 0;
 static uint8_t prevNextCode = 0;
@@ -49,10 +48,10 @@ void setup(void)
   Wire.begin(I2C_ADDRESS);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
-  if (DEBUG >= 1) {
-    Serial.begin (115200);
-    Serial.println("I2C Rotaryencoder for Tasmota");
-  }
+#ifdef DEBUG
+  Serial.begin (115200);
+  Serial.println("I2C Rotaryencoder for Tasmota");
+#endif // DEBUG  
 }
 
 void loop(void)
@@ -60,12 +59,12 @@ void loop(void)
   static int8_t c,val;
   if (val = read_rotary()) {
     c+=val;
-    if (DEBUG >= 1) {
-      Serial.print(c);
-      Serial.print(" ");
-      Serial.print(encoder_value);
-      Serial.print(" ");
-    }
+#ifdef DEBUG
+    Serial.print(c);
+    Serial.print(" ");
+    Serial.print(encoder_value);
+    Serial.print(" ");
+#endif // DEBUG
     if (prevNextCode == 0x0b) {
 #ifdef LIMIT_ENABLE
       if (encoder_value > (uint8_t)LIMIT_MIN) {
@@ -74,10 +73,10 @@ void loop(void)
 #else      
       encoder_value--;
 #endif // LIMIT_ENABLE
-      if (DEBUG >= 1) {
-        Serial.print("left turn ");
-        Serial.println(store,HEX);
-      }
+#ifdef DEBUG
+      Serial.print("left turn ");
+      Serial.println(store,HEX);
+#endif // DEBUG
     }
     if (prevNextCode == 0x07) {
 #ifdef LIMIT_ENABLE
@@ -87,10 +86,10 @@ void loop(void)
 #else      
       encoder_value++;
 #endif // LIMIT_ENABLE
-      if (DEBUG >= 1) {
-        Serial.print("right turn ");
-        Serial.println(store,HEX);
-      }
+#ifdef DEBUG
+      Serial.print("right turn ");
+      Serial.println(store,HEX);
+#endif // DEBUG
     }
   }
 }
